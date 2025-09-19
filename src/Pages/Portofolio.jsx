@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 import { supabase } from "../supabase"; 
-import SwipeableViews from 'react-swipeable-views-react-18-fix';
+import SwipeableViews from 'react-swipeable-views';
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
