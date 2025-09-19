@@ -15,7 +15,7 @@ const socialLinks = [
     displayName: "Let's Connect",
     subText: "on LinkedIn",
     icon: Linkedin,
-    url: "https://www.linkedin.com/in/ekizr/",
+    url: "https://www.linkedin.com/in/dimasdarma/",
     color: "#0A66C2",
     gradient: "from-[#0A66C2] to-[#0077B5]",
     isPrimary: true,
@@ -25,7 +25,7 @@ const socialLinks = [
     displayName: "Instagram",
     subText: "@ekizr_",
     icon: Instagram,
-    url: "https://www.instagram.com/ekizr_/?hl=id",
+    url: "https://www.instagram.com/dimazdarmaa/?hl=id",
     color: "#E4405F",
     gradient: "from-[#833AB4] via-[#E4405F] to-[#FCAF45]",
   },
@@ -34,7 +34,7 @@ const socialLinks = [
     displayName: "Youtube",
     subText: "@eki zulfar",
     icon: Youtube,
-    url: "https://www.youtube.com/@eki_zulfar",
+    url: "https://www.youtube.com/@dimasdarma",
     color: "#FF0000",
     gradient: "from-[#FF0000] to-[#CC0000]",
   },
@@ -50,7 +50,7 @@ const socialLinks = [
   {
     name: "TikTok",
     displayName: "Tiktok",
-    subText: "@eki_zulfar",
+    subText: "@kepoyaa",
     icon: ({ className, ...props }) => (
       <svg
         width="24px"
