@@ -133,10 +133,6 @@ const Home = () => {
           <div className="flex flex-wrap gap-3">
             {TECH_STACK.map((tech, idx) => <TechStack key={idx} tech={tech} />)}
           </div>
-          <div className="flex gap-4 mt-4">
-            <CTAButton href="#Portofolio" text="Projects" icon={ExternalLink} />
-            <CTAButton href="#Contact" text="Contact" icon={Mail} />
-          </div>
           <div className="flex gap-3 mt-4">
             {SOCIAL_LINKS.map((s, idx) => <SocialLink key={idx} {...s} />)}
           </div>
