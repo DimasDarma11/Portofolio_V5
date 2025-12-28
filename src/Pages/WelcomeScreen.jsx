@@ -1,152 +1,177 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, Github, Globe, User } from 'lucide-react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
-const TypewriterEffect = ({ texts = [], speed = 150 }) => {
+const TypewriterEffect = ({ text }) => {
   const [displayText, setDisplayText] = useState('');
-  const [wordIndex, setWordIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const timeoutRef = useRef(null);
-
+  
   useEffect(() => {
-    const handleTyping = () => {
-      const currentWord = texts[wordIndex];
-      if (!isDeleting) {
-        if (charIndex < currentWord.length) {
-          setDisplayText(prev => prev + currentWord[charIndex]);
-          setCharIndex(prev => prev + 1);
-        } else {
-          setTimeout(() => setIsDeleting(true), 1200);
-        }
+    let index = 0;
+    const timer = setInterval(() => {
+      if (index <= text.length) {
+        setDisplayText(text.slice(0, index));
+        index++;
       } else {
-        if (charIndex > 0) {
-          setDisplayText(prev => prev.slice(0, -1));
-          setCharIndex(prev => prev - 1);
-        } else {
-          setIsDeleting(false);
-          setWordIndex((prev) => (prev + 1) % texts.length);
-        }
+        clearInterval(timer);
       }
-    };
-    timeoutRef.current = setTimeout(handleTyping, isDeleting ? speed / 2 : speed);
-    return () => clearTimeout(timeoutRef.current);
-  }, [charIndex, isDeleting, texts, wordIndex, speed]);
-
-  return <span>{displayText}<span className="animate-pulse">|</span></span>;
-};
-
-const IconButton = ({ Icon, delay = 0 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
+    }, 260);
+    
+    return () => clearInterval(timer);
+  }, [text]);
 
   return (
-    <div 
-      className={`relative group transition-all duration-700 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
-      }`}
-    >
-      <div className="relative p-3 bg-slate-900/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 
-                    hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/20 
-                    transition-all duration-300 hover:scale-110">
-        <Icon className="w-6 h-6 text-slate-300 group-hover:text-indigo-400 transition-colors duration-300" />
-      </div>
-    </div>
+    <span className="inline-block">
+      {displayText}
+      <span className="animate-pulse">|</span>
+    </span>
   );
 };
 
-const WelcomeScreen = () => {
+const BackgroundEffect = () => (
+  <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 blur-3xl animate-pulse" />
+    <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/10 via-transparent to-purple-600/10 blur-2xl animate-float" />
+  </div>
+);
+
+const IconButton = ({ Icon }) => (
+  <div className="relative group hover:scale-110 transition-transform duration-300">
+    <div className="absolute -inset-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-75 transition duration-300" />
+    <div className="relative p-2 sm:p-3 bg-black/50 backdrop-blur-sm rounded-full border border-white/10">
+      <Icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
+    </div>
+  </div>
+);
+
+const WelcomeScreen = ({ onLoadingComplete }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setFadeOut(true);
-      setTimeout(() => setIsLoading(false), 700);
-    }, 3500);
-    return () => clearTimeout(timer);
-  }, []);
+    AOS.init({
+      duration: 1000,
+      once: false,
+      mirror: false,
+    });
 
-  if (!isLoading) return null;
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setTimeout(() => {
+        onLoadingComplete?.();
+      }, 1000);
+    }, 4000);
+    
+    return () => clearTimeout(timer);
+  }, [onLoadingComplete]);
+
+  const containerVariants = {
+    exit: {
+      opacity: 0,
+      scale: 1.1,
+      filter: "blur(10px)",
+      transition: {
+        duration: 0.8,
+        ease: "easeInOut",
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const childVariants = {
+    exit: {
+      y: -20,
+      opacity: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeInOut"
+      }
+    }
+  };
 
   return (
-    <div 
-      className={`fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 z-50 
-                transition-all duration-700 ${fadeOut ? 'opacity-0 scale-105' : 'opacity-100'}`}
-    >
-      {/* Subtle animated background orbs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '5s', animationDelay: '1s' }} />
-      </div>
+    <AnimatePresence>
+      {isLoading && (
+        <motion.div
+          className="fixed inset-0 bg-[#030014]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit="exit"
+          variants={containerVariants}
+        >
+          <BackgroundEffect />
+          
+          <div className="relative min-h-screen flex items-center justify-center px-4">
+            <div className="w-full max-w-4xl mx-auto">
+              {/* Icons */}
+              <motion.div 
+                className="flex justify-center gap-3 sm:gap-4 md:gap-8 mb-6 sm:mb-8 md:mb-12"
+                variants={childVariants}
+              >
+                {[Code2, User, Github].map((Icon, index) => (
+                  <div key={index} data-aos="fade-down" data-aos-delay={index * 200}>
+                    <IconButton Icon={Icon} />
+                  </div>
+                ))}
+              </motion.div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
+              {/* Welcome Text */}
+              <motion.div 
+                className="text-center mb-6 sm:mb-8 md:mb-12"
+                variants={childVariants}
+              >
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold space-y-2 sm:space-y-4">
+                  <div className="mb-2 sm:mb-4">
+                    <span data-aos="fade-right" data-aos-delay="200" className="inline-block px-2 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+                      Welcome
+                    </span>{' '}
+                    <span data-aos="fade-right" data-aos-delay="400" className="inline-block px-2 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+                      To
+                    </span>{' '}
+                    <span data-aos="fade-right" data-aos-delay="600" className="inline-block px-2 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+                      Profile
+                    </span>
+                  </div>
 
-      <div className="relative min-h-screen flex flex-col items-center justify-center px-4">
-        {/* Icons */}
-        <div className="flex gap-6 mb-12">
-          <IconButton Icon={Code2} delay={200} />
-          <IconButton Icon={User} delay={400} />
-          <IconButton Icon={Github} delay={600} />
-        </div>
+                  <p
+                    data-aos="fade-up"
+                    data-aos-delay="1100"
+                    className="mt-4 text-gray-400 text-sm sm:text-base"
+                  >
+                    Dimaz Darma Praja — Founder & Owner Arvore Group (ArvoCloud & Digital Services)
+                  </p>
 
-        {/* Welcome Text */}
-        <div className="text-center mb-12 max-w-4xl opacity-0 animate-fadeIn" 
-             style={{ animationDelay: '800ms', animationFillMode: 'forwards' }}>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
-            <span className="bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-clip-text text-transparent">
-              Designing Modern, Scalable,
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-500 bg-clip-text text-transparent">
-              and User-Friendly Web Platforms
-            </span>
-          </h1>
-        </div>
+                </h1>
+              </motion.div>
 
-        {/* Website Link */}
-        <div className="opacity-0 animate-fadeIn" 
-             style={{ animationDelay: '1200ms', animationFillMode: 'forwards' }}>
-          <a
-            href="https://portofolio-v5-tau.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl 
-                     bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 
-                     hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/20
-                     group transition-all duration-300 hover:scale-105"
-          >
-            <Globe className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
-            <span className="text-lg font-medium bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              <TypewriterEffect texts={["dimaz-porto.vercel.app", "Visit My Portfolio"]} />
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.8s ease-out;
-        }
-      `}</style>
-    </div>
+              {/* Website Link */}
+              <motion.div 
+                className="text-center"
+                variants={childVariants}
+                data-aos="fade-up"
+                data-aos-delay="1200"
+              >
+                <a
+                  href="https://www.eki.my.id"
+                  className="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-full relative group hover:scale-105 transition-transform duration-300"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 rounded-full blur-md group-hover:blur-lg transition-all duration-300" />
+                  <div className="relative flex items-center gap-2 text-lg sm:text-xl md:text-2xl">
+                    <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                    <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      <TypewriterEffect text="www.eki.my.id" />
+                    </span>
+                  </div>
+                </a>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
