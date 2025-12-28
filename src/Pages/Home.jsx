@@ -1,56 +1,7 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Github, Linkedin, Instagram, Sparkles } from "lucide-react";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import AOS from "aos";
-import "aos/dist/aos.css";
-
-// Memoized Components
-const StatusBadge = memo(() => (
-  <div className="inline-block" data-aos="zoom-in" data-aos-delay="400">
-    <div className="relative group">
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-700"></div>
-      <div className="relative px-4 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10">
-        <span className="flex items-center text-sm font-medium text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
-          <Sparkles className="w-4 h-4 mr-2" />
-          Ready to Innovate
-        </span>
-      </div>
-    </div>
-  </div>
-));
-
-const MainTitle = memo(() => (
-  <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
-    <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-      <span className="bg-gradient-to-r from-white via-indigo-300 to-purple-300 bg-clip-text text-transparent">
-        Full-Stack
-      </span>
-      <br />
-      <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-        Developer
-      </span>
-    </h1>
-  </div>
-));
-
-const TechStack = memo(({ tech }) => (
-  <div className="px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition">
-    {tech}
-  </div>
-));
-
-const SocialLink = memo(({ icon: Icon, link }) => (
-  <a href={link} target="_blank" rel="noopener noreferrer">
-    <div className="group relative p-2 rounded-lg bg-black/30 backdrop-blur-md border border-white/10 flex items-center justify-center transition hover:bg-white/10">
-      <Icon className="w-5 h-5 text-gray-400 group-hover:text-white transition" />
-    </div>
-  </a>
-));
 
 // Constants
-const TYPING_SPEED = 100;
-const ERASING_SPEED = 50;
-const PAUSE_DURATION = 2000;
 const WORDS = ["Network & Telecom Student", "Tech Enthusiast"];
 const TECH_STACK = ["React", "JavaScript", "Node.js", "Tailwind"];
 const SOCIAL_LINKS = [
@@ -64,10 +15,10 @@ const Home = () => {
   const [isTyping, setIsTyping] = useState(true);
   const [wordIndex, setWordIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    AOS.init({ once: true, offset: 10 });
+    setMounted(true);
   }, []);
 
   const handleTyping = useCallback(() => {
@@ -76,7 +27,7 @@ const Home = () => {
         setText((prev) => prev + WORDS[wordIndex][charIndex]);
         setCharIndex((prev) => prev + 1);
       } else {
-        setTimeout(() => setIsTyping(false), PAUSE_DURATION);
+        setTimeout(() => setIsTyping(false), 2000);
       }
     } else {
       if (charIndex > 0) {
@@ -90,66 +41,96 @@ const Home = () => {
   }, [charIndex, isTyping, wordIndex]);
 
   useEffect(() => {
-    const timeout = setTimeout(handleTyping, isTyping ? TYPING_SPEED : ERASING_SPEED);
+    const timeout = setTimeout(handleTyping, isTyping ? 100 : 50);
     return () => clearTimeout(timeout);
   }, [handleTyping, isTyping]);
-
-  const lottieOptions = {
-    src: "https://lottie.host/58753882-bb6a-49f5-a2c0-950eda1e135a/NLbpVqGegK.lottie",
-    loop: true,
-    autoplay: true,
-    style: { width: "100%", height: "100%", transition: "transform 0.5s ease" },
-    className: `w-full h-full ${isHovering ? "scale-110 rotate-2" : "scale-100"}`,
-  };
 
   return (
     <section
       id="Home"
-      className="min-h-screen flex items-center bg-[#030014] px-6 lg:px-24 pt-24 md:pt-28"
+      className="min-h-screen flex items-start justify-center bg-gradient-to-b from-slate-50 via-white to-slate-50 px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-20 relative overflow-hidden"
     >
-      <div className="container mx-auto flex flex-col lg:flex-row items-center gap-12">
-        {/* Left Section */}
-        <div
-          className="w-full lg:w-1/2 space-y-6 text-left"
-          data-aos="fade-right"
-          data-aos-delay="200"
-        >
-          <StatusBadge />
-          <MainTitle />
+      {/* Background Effects */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '5s', animationDelay: '1s' }} />
+      </div>
 
-          <div className="h-8 flex items-center text-xl md:text-2xl font-light text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-300">
-            {text}
-            <span className="w-[3px] h-6 bg-gradient-to-t from-indigo-500 to-purple-600 ml-1 animate-blink"></span>
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.05)_1px,transparent_1px)] bg-[size:64px_64px]" />
+
+      <div className="container mx-auto max-w-4xl relative z-10">
+        <div className={`flex flex-col items-center text-center space-y-6 sm:space-y-8 transition-all duration-1000 ${
+          mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
+          {/* Status Badge */}
+          <div className="inline-block">
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+              <div className="relative px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm">
+                <span className="flex items-center text-xs sm:text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-indigo-600" />
+                  Ready to Innovate
+                </span>
+              </div>
+            </div>
           </div>
 
-          <p className="text-gray-400 max-w-xl leading-relaxed">
+          {/* Main Title */}
+          <div className="space-y-2 sm:space-y-3">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+              <span className="block bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent">
+                OWNER
+              </span>
+              <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent">
+                ARVORE GROUP
+              </span>
+            </h1>
+          </div>
+
+          {/* Typewriter */}
+          <div className="h-8 sm:h-10 flex items-center justify-center">
+            <span className="text-lg sm:text-xl md:text-2xl font-light text-slate-600">
+              {text}
+            </span>
+            <span className="w-[2px] sm:w-[3px] h-5 sm:h-7 bg-gradient-to-t from-indigo-600 to-purple-600 ml-1 animate-pulse"></span>
+          </div>
+
+          {/* Description */}
+          <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl px-4">
             Menciptakan Website Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.
           </p>
 
-          <div className="flex flex-wrap gap-3">
+          {/* Tech Stack */}
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center px-4">
             {TECH_STACK.map((tech, idx) => (
-              <TechStack key={idx} tech={tech} />
+              <div
+                key={idx}
+                className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm
+                         text-xs sm:text-sm font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50 
+                         transition-all duration-300 hover:scale-105"
+              >
+                {tech}
+              </div>
             ))}
           </div>
 
-          <div className="flex gap-3 mt-4">
-            {SOCIAL_LINKS.map((s, idx) => (
-              <SocialLink key={idx} {...s} />
+          {/* Social Links */}
+          <div className="flex gap-3 sm:gap-4 pt-2">
+            {SOCIAL_LINKS.map((social, idx) => (
+              <a
+                key={idx}
+                href={social.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative p-2.5 sm:p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm
+                         hover:border-indigo-400 hover:shadow-md hover:shadow-indigo-200
+                         transition-all duration-300 hover:scale-110"
+              >
+                <social.icon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+              </a>
             ))}
-          </div>
-        </div>
-
-        {/* Right Section */}
-        <div
-          className="w-full lg:w-1/2 h-[450px] md:h-[500px] lg:h-[600px] relative flex items-center justify-center"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-          data-aos="fade-left"
-          data-aos-delay="400"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-3xl blur-3xl transition-opacity duration-700"></div>
-          <div className="relative w-full h-full">
-            <DotLottieReact {...lottieOptions} />
           </div>
         </div>
       </div>
@@ -157,4 +138,4 @@ const Home = () => {
   );
 };
 
-export default memo(Home);
+export default Home;
